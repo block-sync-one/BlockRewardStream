@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+
+	--font-family: 'Inter', sans-serif;
+
+	--primary: #B84794;
+	--secondary: #ca69ed;
+	--tertiary: #5260ff;
+	--success: #17B26A;
+	--warning: #F79009;
+	--danger: #F04438;
+	--dark: #0D121C;
+	--light: #FFFFFF;
+	--light-gray: #4B5565;
+}
+
+.max-w-screen-xlg {
+    max-width: 47rem;
+}
+
+.wallet-button {
+    background-color: var(--primary);
+    color: var(--light);
+}
