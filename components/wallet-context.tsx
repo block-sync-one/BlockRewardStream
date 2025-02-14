@@ -5,8 +5,6 @@ import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
 import {
     WalletModalProvider,
-    WalletDisconnectButton,
-    WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 
 
@@ -20,8 +18,8 @@ export const Wallet: FC = () => {
 
     // // You can also provide a custom RPC endpoint.
     // const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-    const network = process.env.REACT_APP_NETWORK as WalletAdapterNetwork;
-    const endpoint = process.env.REACT_APP_SOLANA_RPC_HOST;
+    const network = process.env.SOLANA_NETWORK as WalletAdapterNetwork;
+    const endpoint = process.env.SOLANA_RPC_HOST;
     console.log(network, endpoint);
     const wallets = useMemo(
         () => [
@@ -51,21 +49,5 @@ export const Wallet: FC = () => {
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
-
-        // <ConnectionProvider endpoint={endpoint as string}>
-        //     <WalletProvider wallets={wallets}>
-        //         <WalletModalProvider>
-        //         <StakeGroupWrapper children={
-        //             <WalletMultiButton
-        //                style={{ 
-        //                 backgroundColor: 'var(--primary)',
-        //                 color: 'var(--light)'
-        //             }}>
-        //                 Connect Wallet
-        //             </WalletMultiButton>}/>
-        //             { /* Your app's components go here, nested within the context providers. */ }
-        //         </WalletModalProvider>
-        //     </WalletProvider>
-        // </ConnectionProvider>
     );
 };

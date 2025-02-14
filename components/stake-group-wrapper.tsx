@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { useState, useEffect } from "react";
-import { Validator } from "@/components/validator-card/select-validator";
+import { Validator, Staker } from "@/app/utils/solana-helpers";
 import ValidatorData from "@/components/validator-card/validator-data";
 import { StakersTable } from "@/components/staker-card/stakers-table";
 import BRCalc from "@/components/validator-card/br-calc";
@@ -9,15 +9,19 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useConnection } from "@solana/wallet-adapter-react";
 import {Button} from "@heroui/button";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-export const StakeGroupWrapper = ({ children }: { children?: React.ReactNode }) => {
+import { fixedNumber } from "@/app/utils/num-helpers";
+import DistributeComponent from "./validator-card/distribute";
+
+export const StakeGroupWrapper = () => {
     const { connected, publicKey, disconnect }: any = useWallet();
     const { connection } = useConnection();
     const [selectedValidator, setSelectedValidator] = useState<Validator | null>(null);
-    const [numberOfStakes, setNumberOfStakes] = useState(10);
+    const [stakerList, setStakerList] = useState<Staker[]>([]);
     const [numberOfActiveStake, setNumberOfActiveStake] = useState(0);
     const [rewardShare, setRewardShare] = useState(0);
+    const [totalBlockReward, setTotalBlockReward] = useState(0);
     const [balance, setBalance] = useState<number>(0);
-
+    const [transactionStatus, setTransactionStatus] = useState<string[]>([]);
     useEffect(() => {
         const getBalance = async () => {
             if (connected && publicKey && connection) {
@@ -27,6 +31,10 @@ export const StakeGroupWrapper = ({ children }: { children?: React.ReactNode }) 
         };
         getBalance();
     }, [connected, publicKey, connection]);
+
+    const handleTotalBlockRewardChange = (value: number | null) => {
+        setTotalBlockReward(value ?? 0);
+    };
 
     return (
         <div className="flex flex-col gap-4">
@@ -40,29 +48,32 @@ export const StakeGroupWrapper = ({ children }: { children?: React.ReactNode }) 
                     <ValidatorData
                         selectedValidator={selectedValidator}
                         setSelectedValidator={setSelectedValidator}
-                        numberOfStakes={numberOfStakes}
+                        numberOfStakes={stakerList.length}
                         numberOfActiveStake={numberOfActiveStake}
+                        onTotalBlockRewardChange={handleTotalBlockRewardChange}
                     />
                     {selectedValidator && (
                         <div className="m-14 flex justify-center flex-col border rounded-lg p-4">
                             <span className="text-gray-500 mb-4">Block Reward Sharing Calc</span>
                             <div className="flex justify-center">
-                                <BRCalc onChangeFn={setRewardShare} totalBlockReward={10} />
+                                <BRCalc onChangeFn={setRewardShare} totalBlockReward={totalBlockReward} />
                             </div>
                             <div className="flex flex-col items-center mt-6">
+                                {!connected  && (<>
                                 <span className="text-gray-500 mb-4">Want to share your block reward with your stakers?</span>
-                                
-                                <WalletMultiButton />
+                                    <WalletMultiButton />
+                                    </>
+                                )}
                                 
                                
                             </div>
                             {connected && publicKey && connection && (
-                                    <div className="flex items-center max-w-full gap-4">
+                                    <div className="flex items-center max-w-full justify-between">
                                         <div className="flex flex-col gap-1">
                                             <span className="truncate">
                                                 wallet address: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
                                             </span>
-                                            <span>Balance: {balance} SOL</span>
+                                            <span>Balance: {fixedNumber(balance)} SOL</span>
                                             <Button 
                                                 onClick={disconnect}
                                                 className="text-red-500 rounded-lg bg-transparent"
@@ -71,14 +82,7 @@ export const StakeGroupWrapper = ({ children }: { children?: React.ReactNode }) 
                                                 Disconnect
                                             </Button>
                                         </div>
-                                        <div className="flex gap-2">
-                                            <Button 
-                                                color="primary"
-                                                className="px-4 py-2 text-white rounded-lg"
-                                            >
-                                                Distribute
-                                            </Button>
-                                        </div>
+                                        <DistributeComponent stakerList={stakerList} selectedValidator={selectedValidator} />
                                     </div>
                                 )}
                         </div>
@@ -90,9 +94,20 @@ export const StakeGroupWrapper = ({ children }: { children?: React.ReactNode }) 
                 <StakersTable
                     validatorVoteId={selectedValidator?.vote_identity ?? ""}
                     sharedBlockReward={rewardShare}
-                    setNumberOfStakes={setNumberOfStakes}
+                    setStakerList={setStakerList}
                     setNumberOfActiveStake={setNumberOfActiveStake}
                 />
+            )}
+
+            {transactionStatus.length > 0 && (
+                <div className="mt-4">
+                    <h3>Transaction Status:</h3>
+                    <ul>
+                        {transactionStatus.map((status, index) => (
+                            <li key={index}>Transaction {index + 1}: {status}</li>
+                        ))}
+                    </ul>
+                </div>
             )}
         </div>
     );

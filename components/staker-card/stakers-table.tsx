@@ -16,35 +16,25 @@ import { useState, useEffect } from "react"
 import { AsyncListData } from "@react-stately/data";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useConnection } from "@solana/wallet-adapter-react";
+import { fixedNumber } from "@/app/utils/num-helpers";
+import { fetchDelegators, Staker } from "@/app/utils/solana-helpers";
 
 interface StakersTableProps {
     validatorVoteId: string;
     sharedBlockReward?: number; // Optional prop for reward sharing percentage
-    setNumberOfStakes: (numberOfStakes: number) => void;
+    setStakerList: (stakerList: Staker[]) => void;
     setNumberOfActiveStake: (numberOfActiveStake: number) => void;
 }
 
-interface StakeRecord {
-    wallet: string;
-    account: string;
-    stake: number;
-    sharedReward: number;
-}
 
-// New component for SharedRewardCell
-const SharedRewardCell = ({ stake, totalStake, sharedBlockReward }: { stake: number, totalStake: number, sharedBlockReward: number }) => {
-    const sharedReward = (stake / totalStake) * sharedBlockReward;
-    return (
-        <TableCell className="text-right text-primary">{sharedReward}</TableCell>
-    );
-};
 
-export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setNumberOfStakes, setNumberOfActiveStake }: StakersTableProps) => {
+
+export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setStakerList, setNumberOfActiveStake }: StakersTableProps) => {
     const [isLoading, setIsLoading] = useState(true);
     const [previousVoteId, setPreviousVoteId] = useState(validatorVoteId);
     const { connected, publicKey }: any = useWallet();
     const { connection } = useConnection();
-    const list: AsyncListData<StakeRecord> = useAsyncList<StakeRecord>({
+    const list: AsyncListData<Staker> = useAsyncList<Staker>({
         async load() {
 
             try {
@@ -59,47 +49,18 @@ export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setNumber
                 }
                 setIsLoading(true);
                 const currentEpoch = (await connection.getEpochInfo()).epoch;
-                const config = {
-                    filters: [{
-                        memcmp: {
-                            offset: 124,
-                            bytes: validatorVoteId,
-                        }
-                    }]
-                };
-
-                const delegatorsParsed = await connection.getParsedProgramAccounts(
-                    new PublicKey('Stake11111111111111111111111111111111111111'),
-                    config
-                );
-                
-                const stakersData = delegatorsParsed
-                .filter(account =>
-                    Number((account.account.data as any)['parsed'].info.stake.delegation.deactivationEpoch) > currentEpoch
-                )
-                .map(account => {
-                    const accountData = (account.account.data as any)['parsed'].info;
-                    const stakeAmount = accountData.stake.delegation.stake / LAMPORTS_PER_SOL;
-                    return {
-                        wallet: accountData.meta.authorized.withdrawer,
-                        account: account.pubkey.toBase58(),
-                        stake: stakeAmount,
-                        sharedReward: 0, // Initialize to 0, will update after calculating total stake
-                    };
-                })
-                .sort((a, b) => b.stake - a.stake);
+                const stakersData = await fetchDelegators(connection, validatorVoteId, currentEpoch);
 
                 // Calculate total stake
                 const totalStake = stakersData.reduce((acc, curr) => acc + curr.stake, 0);
-                console.log("totalStake", totalStake);
-
+              
                 // Update shared rewards based on proportion of total stake
                 const updatedStakersData = stakersData.map(staker => ({
                     ...staker,
                     sharedReward: (staker.stake / totalStake) * sharedBlockReward
                 }));
                 
-                setNumberOfStakes(stakersData.length);
+                setStakerList(updatedStakersData);
                 setNumberOfActiveStake(totalStake)
                 setIsLoading(false);
                 setPreviousVoteId(validatorVoteId);
@@ -114,8 +75,8 @@ export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setNumber
 
     useEffect(() => {
         console.log("validatorVoteId", validatorVoteId);
-        setNumberOfStakes(null as any);
-        setNumberOfActiveStake(null as any);
+        setStakerList([]);
+        setNumberOfActiveStake(0);
         list.reload();
     }, [validatorVoteId]);
 
@@ -142,8 +103,10 @@ export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setNumber
                     <TableRow key={item.account}>
                         <TableCell>{item.wallet}</TableCell>
                         <TableCell>{item.account}</TableCell>
-                        <TableCell>{item.stake}</TableCell>
-                        <TableCell>{item.sharedReward}</TableCell>
+                        <TableCell>{fixedNumber(item.stake)}</TableCell>
+                        <TableCell className="text-center">
+                            <span className="text-primary">{fixedNumber(item.sharedReward)}</span>
+                        </TableCell>
             
                     </TableRow>
                 )}

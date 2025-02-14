@@ -1,25 +1,40 @@
 "use client";
 
 import { Card, CardHeader, CardBody } from "@heroui/card";
-import { ValidatorSelect, Validator } from "./select-validator";
+import { ValidatorSelect } from "./select-validator";
 import { useState, useEffect } from "react";
 import {Skeleton} from "@heroui/skeleton";
+import { fixedNumber } from "@/app/utils/num-helpers";
+import { Validator } from "@/app/utils/solana-helpers";
+import { fetchValidatorsExtended } from "@/app/utils/solana-helpers";
 
 interface ValidatorDataProps {
   selectedValidator: Validator | null;
   setSelectedValidator: (validator: Validator | null) => void;
   numberOfStakes: number;
   numberOfActiveStake: number;
+  onTotalBlockRewardChange: (totalBlockReward: number | null) => void;
 }
 
-const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes, numberOfActiveStake,  }: ValidatorDataProps) => {
+const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes, numberOfActiveStake,  onTotalBlockRewardChange  }: ValidatorDataProps) => {
+  const [blockReward, setBlockReward] = useState<number | null>(null);
+
   useEffect(() => {
     console.log("selectedValidator", selectedValidator, numberOfStakes);
     // Reset numberOfStakes when validator changes
     if (selectedValidator === null) {
-      // You might need to implement a way to reset numberOfStakes
-      // through the parent component, for example:
-      // setNumberOfStakes(0);
+      setBlockReward(null);
+    } else {
+      // Fetch extended validator data when a validator is selected
+      fetchValidatorsExtended(selectedValidator.vote_identity)
+        .then(data => {
+          onTotalBlockRewardChange(data.total_block_rewards_after_burn);
+          setBlockReward(data.total_block_rewards_after_burn);
+        })
+        .catch(error => {
+          console.error("Error fetching validator rewards:", error);
+          setBlockReward(null);
+        });
     }
   }, [selectedValidator]);
   
@@ -38,7 +53,7 @@ const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes
                     <div className="flex flex-col">
                       <span className="text-gray-500">Total Staked</span>
                       <span className="font-medium">
-                        {numberOfActiveStake || <Skeleton className="h-6 w-24" />}
+                        {fixedNumber(numberOfActiveStake) || <Skeleton className="h-6 w-24" />}
                       </span>
                     </div>
                   </div>
@@ -46,14 +61,16 @@ const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes
                     <div className="flex flex-col">
                       <span className="text-gray-500">Number of Stakers</span>
                       <span className="font-medium">
-                        {numberOfStakes || <Skeleton className="h-6 w-24" />}
+                        { fixedNumber(numberOfStakes) || <Skeleton className="h-6 w-24" />}
                       </span>
                     </div>
                   </div>
                   <div className="col-span-3 space-y-2">
                     <div className="flex flex-col">
-                      <span className="text-gray-500">Block reward earned</span>
-                      <span className="font-medium">10 SOL</span>
+                      <span className="text-gray-500">Prev. Epoch Block Reward</span>
+                      <span className="font-medium">
+                        {blockReward ? `${fixedNumber(blockReward)} SOL` : <Skeleton className="h-6 w-24" />}
+                      </span>
                     </div>
                   </div>
                 </>

@@ -1,6 +1,6 @@
 import { Slider } from "@heroui/slider";
 import { useEffect, useState } from "react";
-
+import { fixedNumber } from "@/app/utils/num-helpers";
 interface BRCalcProps {
   onChangeFn: (value: number) => void;
   totalBlockReward: number;
@@ -13,7 +13,12 @@ const BRCalc: React.FC<BRCalcProps> = ({ onChangeFn, totalBlockReward }) => {
     { value: 75, label: '75%' },
     { value: 100, label: '100%' }
   ];
-
+  
+useEffect(() => {
+  setTimeout(() => {
+    onChangeFn(10 / 100 * totalBlockReward);
+  }, 500);
+}, [totalBlockReward]);
   return (
     <Slider
       className="max-w-lg"
@@ -24,7 +29,7 @@ const BRCalc: React.FC<BRCalcProps> = ({ onChangeFn, totalBlockReward }) => {
       size="sm"
       step={1}
       onChange={(value) => onChangeFn((value as number / 100) * totalBlockReward as number)}
-      getValue={(value) => `${((value as number / 100) * totalBlockReward).toFixed(2)} SOL`}
+      getValue={(value) => `${fixedNumber((value as number / 100) * totalBlockReward)} SOL`}
       showTooltip={true}
     />
   );
