@@ -1,3 +1,4 @@
+"use client";
 import { Slider } from "@heroui/slider";
 import { useEffect, useState } from "react";
 import { fixedNumber } from "@/app/utils/num-helpers";
@@ -13,7 +14,7 @@ const BRCalc: React.FC<BRCalcProps> = ({ onChangeFn, totalBlockReward }) => {
     { value: 75, label: '75%' },
     { value: 100, label: '100%' }
   ];
-  
+
 useEffect(() => {
   setTimeout(() => {
     onChangeFn(10 / 100 * totalBlockReward);
