@@ -48,6 +48,6 @@ export const siteConfig = {
     twitter: "https://x.com/SolanaHubApp",
     // docs: "https://heroui.com",
     // discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://solanahub.app/staking",
+    sponsor: "https://www.solanahub.app",
   },
 };

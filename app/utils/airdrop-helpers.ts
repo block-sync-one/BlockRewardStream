@@ -31,7 +31,7 @@ export const prepareAirdropTransactions = async (
             return SystemProgram.transfer({
                 fromPubkey: signer,
                 toPubkey: new PublicKey(drop.account),
-                lamports: drop.stake * LAMPORTS_PER_SOL,
+                lamports: Math.floor(drop.stake * LAMPORTS_PER_SOL),
             });
         });
 
