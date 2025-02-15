@@ -5,8 +5,7 @@ import { StakeGroupWrapper } from "@/components/stake-group-wrapper";
 import { WalletContext } from "@/components/wallet-context";
 // import { useState } from "react";
 // import { useSearchParams } from "next/navigation";
-import { inject } from '@vercel/analytics';
-inject({mode: "production"});
+
 export default function Home() {
   // const searchParams = useSearchParams();
   // const selectedValidatorId = searchParams.get("selected");

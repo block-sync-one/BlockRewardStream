@@ -8,7 +8,8 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
-
+import { Analytics } from '@vercel/analytics/next';
+ 
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -46,8 +47,9 @@ export default function RootLayout({
             <Navbar />
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
               {children}
+              <Analytics />
             </main>
-           
+
           </div>
         </Providers>
       </body>
