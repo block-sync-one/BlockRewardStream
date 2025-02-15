@@ -56,7 +56,6 @@ return (
                     />
                     {selectedValidator && (
                         <div className="m-14 flex justify-center flex-col border rounded-lg p-4">
-                            <span className="text-gray-500 mb-4">Block Reward Sharing Calc</span>
                             <div className="flex justify-center">
                                 <BRCalc onChangeFn={setRewardShare} totalBlockReward={totalBlockReward} />
                             </div>
@@ -72,10 +71,10 @@ return (
                             {connected && publicKey && connection && (
                                     <div className="flex items-center max-w-full justify-between">
                                         <div className="flex flex-col gap-1">
-                                            <span className="truncate">
+                                            <span className="truncate text-light-500">
                                                 wallet address: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
                                             </span>
-                                            <span>Balance: {fixedNumber(balance)} SOL</span>
+                                            <span className="text-light-500">Balance: {fixedNumber(balance)} SOL</span>
                                             <Button 
                                                 onClick={disconnect}
                                                 className="text-red-500 rounded-lg bg-transparent"
