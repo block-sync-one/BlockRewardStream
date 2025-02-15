@@ -1,4 +1,4 @@
-"use·client"
+"use client"
 import React, { FC, useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
@@ -12,7 +12,7 @@ import {
 import '@solana/wallet-adapter-react-ui/styles.css';
 import { StakeGroupWrapper } from './stake-group-wrapper';
 
-export const Wallet: FC = () => {
+export const WalletContext: FC = () => {
     // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
     // const network = WalletAdapterNetwork.Devnet;
 

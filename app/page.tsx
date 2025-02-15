@@ -2,7 +2,7 @@
 import { title, subtitle } from "@/components/primitives";
 
 import { StakeGroupWrapper } from "@/components/stake-group-wrapper";
-import { Wallet } from "@/components/wallet-context";
+import { WalletContext } from "@/components/wallet-context";
 // import { useState } from "react";
 // import { useSearchParams } from "next/navigation";
 
@@ -26,7 +26,7 @@ export default function Home() {
         While we await the SIMD0123 release, take advantage of our tool to effortlessly calculate and share block rewards with your stakers.
         </div>
       </div>
-      <Wallet />
+      <WalletContext />
      
     </section>
   );
