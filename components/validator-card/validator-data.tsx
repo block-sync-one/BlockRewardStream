@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardHeader, CardBody } from "@heroui/card";
 import { ValidatorSelect } from "./select-validator";
 import { useState, useEffect } from "react";
 import {Skeleton} from "@heroui/skeleton";

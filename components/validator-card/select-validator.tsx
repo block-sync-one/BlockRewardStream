@@ -1,11 +1,9 @@
 "use client";
 
 import { Key, useEffect, useState } from "react";
-import { Select, SelectSection, SelectItem } from "@heroui/select";
 import { Avatar } from "@heroui/avatar";
 import {
     Autocomplete,
-    AutocompleteSection,
     AutocompleteItem
     } from "@heroui/autocomplete";
 import { fetchValidators, Validator } from "@/app/utils/solana-helpers";

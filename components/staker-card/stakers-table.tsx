@@ -1,6 +1,4 @@
 "use client";
-import { Card } from "@heroui/card";
-import { CardBody, CardHeader } from "@heroui/card";
 import {
     Table,
     TableHeader,
@@ -11,7 +9,6 @@ import {
 } from "@heroui/table";
 import {Spinner} from "@heroui/spinner";
 import {useAsyncList} from "@react-stately/data";
-import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
 import { useState, useEffect } from "react"
 import { AsyncListData } from "@react-stately/data";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -32,7 +29,6 @@ interface StakersTableProps {
 export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setStakerList, setNumberOfActiveStake }: StakersTableProps) => {
     const [isLoading, setIsLoading] = useState(true);
     const [previousVoteId, setPreviousVoteId] = useState(validatorVoteId);
-    const { connected, publicKey }: any = useWallet();
     const { connection } = useConnection();
     const list: AsyncListData<Staker> = useAsyncList<Staker>({
         async load() {
