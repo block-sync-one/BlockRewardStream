@@ -1,53 +1,34 @@
-# Next.js & HeroUI Template
+# SIMD96 Block Reward Sharing Tool
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+## Overview
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
+SIMD96 is out, but currently, validators face challenges in sharing block rewards with stakers. While we await the release of SIMD0123, this tool provides an efficient solution to calculate and distribute block rewards among stakers.
 
-## Technologies Used
+## Features
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+- **Effortless Calculation**: Automatically calculates block rewards for validators.
+- **Seamless Distribution**: Facilitates the sharing of rewards with stakers.
+- **Integration with APIs**: Utilizes RESTful APIs like Stakewiz and Trillium to fetch and process validator data.
 
-## How to Use
+## How It Works
 
-### Use the template with create-next-app
+1. **Data Fetching**: The tool connects to Stakewiz and Trillium APIs to gather necessary validator data.
+2. **Reward Calculation**: Using the fetched data, it calculates the block rewards for each validator.
+3. **Reward Distribution**: The calculated rewards are then distributed to the respective stakers.
 
-To create a new project based on this template using `create-next-app`, run the following command:
+## Getting Started
 
-```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
-```
+### Prerequisites
 
-### Install dependencies
+- make sure you have a valid RPC endpoint
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 
-```bash
-npm install
-```
 
-### Run the development server
 
-```bash
-npm run dev
-```
+## Contributing
 
-### Setup pnpm (optional)
-
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
-
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
-
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+We welcome contributions! Please fork the repository and submit a pull request for any enhancements or bug fixes.
 
 ## License
 
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
+This project is licensed under the MIT License.

@@ -6,7 +6,7 @@ export interface Staker {
     wallet: string;
     account: string;
     stake: number;
-    sharedReward: number;
+    sharedReward: any;
 }
 
 interface validatorExtraInfo {

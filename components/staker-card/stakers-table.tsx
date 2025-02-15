@@ -13,7 +13,7 @@ import { useState, useEffect } from "react"
 import { AsyncListData } from "@react-stately/data";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useConnection } from "@solana/wallet-adapter-react";
-import { fixedNumber } from "@/app/utils/num-helpers";
+import { fixedNumber, formatScientificToDecimal } from "@/app/utils/num-helpers";
 import { fetchDelegators, Staker } from "@/app/utils/solana-helpers";
 
 interface StakersTableProps {
@@ -39,7 +39,7 @@ export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setStaker
                     console.log("recalculating rewards using existing items");
                     const updatedItems = list.items.map(item => ({
                         ...item,
-                        sharedReward: (item.stake / list.items.reduce((acc, curr) => acc + curr.stake, 0)) * sharedBlockReward
+                        sharedReward: formatScientificToDecimal((item.stake / list.items.reduce((acc, curr) => acc + curr.stake, 0)) * sharedBlockReward)   
                     }));
                     return { items: updatedItems };
                 }
@@ -53,7 +53,7 @@ export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setStaker
                 // Update shared rewards based on proportion of total stake
                 const updatedStakersData = stakersData.map(staker => ({
                     ...staker,
-                    sharedReward: (staker.stake / totalStake) * sharedBlockReward
+                    sharedReward: formatScientificToDecimal((staker.stake / totalStake) * sharedBlockReward)
                 }));
                 
                 setStakerList(updatedStakersData);

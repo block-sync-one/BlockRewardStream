@@ -53,6 +53,7 @@ return (
                         numberOfStakes={stakerList.length}
                         numberOfActiveStake={numberOfActiveStake}
                         onTotalBlockRewardChange={handleTotalBlockRewardChange}
+                        blockRewardShare={rewardShare}
                     />
                     {selectedValidator && (
                         <div className="m-14 flex justify-center flex-col border rounded-lg p-4">

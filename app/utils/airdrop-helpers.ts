@@ -9,7 +9,8 @@ import {
     sendAndConfirmTransaction,
     TransactionInstruction,
     VersionedTransaction,
-    BlockheightBasedTransactionConfirmationStrategy
+    BlockheightBasedTransactionConfirmationStrategy,
+    TransactionBlockhashCtor
 } from '@solana/web3.js';
 import { Staker } from './solana-helpers';
 
@@ -17,9 +18,11 @@ import { Staker } from './solana-helpers';
 export const prepareAirdropTransactions = async (
     dropList: Staker[],
     signer: PublicKey,
-    sharedBlockReward: number
+    sharedBlockReward: number,
+    SOLANA_CONNECTION: Connection
 ) => {
-
+    const { lastValidBlockHeight, blockhash } = await SOLANA_CONNECTION.getLatestBlockhash();
+    const txArgs: TransactionBlockhashCtor = { feePayer: signer, blockhash, lastValidBlockHeight: lastValidBlockHeight }
 
     const NUM_DROPS_PER_TX = 10;
 
@@ -32,7 +35,6 @@ export const prepareAirdropTransactions = async (
                 airdrop: Math.floor(((drop.stake / totalStake) * sharedBlockReward) * LAMPORTS_PER_SOL)
             }
         })
-        console.log(airdrop);
         const txInstructions: TransactionInstruction[] = airdrop.map(drop => {
             return SystemProgram.transfer({
                 fromPubkey: signer,
@@ -43,7 +45,7 @@ export const prepareAirdropTransactions = async (
 
         const numTransactions = Math.ceil(txInstructions.length / NUM_DROPS_PER_TX);
         for (let i = 0; i < numTransactions; i++) {
-            let bulkTransaction = new Transaction();
+            let bulkTransaction = new Transaction(txArgs);
             let lowerIndex = i * NUM_DROPS_PER_TX;
             let upperIndex = (i + 1) * NUM_DROPS_PER_TX;
             for (let j = lowerIndex; j < upperIndex; j++) {

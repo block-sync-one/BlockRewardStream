@@ -13,18 +13,39 @@ interface ValidatorDataProps {
   numberOfStakes: number;
   numberOfActiveStake: number;
   onTotalBlockRewardChange: (totalBlockReward: number | null) => void;
+  blockRewardShare: number;
 }
 
-const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes, numberOfActiveStake,  onTotalBlockRewardChange  }: ValidatorDataProps) => {
-  const [blockReward, setBlockReward] = useState<number | null>(null);
+const ValidatorData = ({ 
+  selectedValidator, 
+  setSelectedValidator, 
+  numberOfStakes, 
+  numberOfActiveStake,  
+  onTotalBlockRewardChange,
+  blockRewardShare 
+}: ValidatorDataProps) => {
+  const [blockReward, setBlockReward] = useState<number>(0);
+  const [blockRewardShareCalc, setBlockRewardShareCalc] = useState<number>(0);
 
   useEffect(() => {
-    console.log("selectedValidator", selectedValidator, numberOfStakes);
-    // Reset numberOfStakes when validator changes
+
+    const calcBlockRewardShare = () => {
+      console.log("blockRewardShare", blockRewardShare);
+      const epochsPerYear = 180;
+      const blockRewardPerYearEstimate = blockRewardShare * epochsPerYear;
+      const projectApy = blockRewardPerYearEstimate / numberOfActiveStake * 100;
+
+      setBlockRewardShareCalc(projectApy);
+    };
+
+    calcBlockRewardShare();
+  }, [blockReward, blockRewardShare, numberOfActiveStake]);
+
+  useEffect(() => {
+    // console.log("selectedValidator", selectedValidator, numberOfStakes);
     if (selectedValidator === null) {
-      setBlockReward(null);
+      setBlockReward(0);
     } else {
-      // Fetch extended validator data when a validator is selected
       fetchValidatorsExtended(selectedValidator.vote_identity)
         .then(data => {
           onTotalBlockRewardChange(data.total_block_rewards_after_burn);
@@ -32,7 +53,7 @@ const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes
         })
         .catch(error => {
           console.error("Error fetching validator rewards:", error);
-          setBlockReward(null);
+          setBlockReward(0);
         });
     }
   }, [selectedValidator]);
@@ -47,8 +68,8 @@ const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes
                 </div>
               </div>
               {selectedValidator ? (
-                <>
-                  <div className="col-span-2 space-y-2">
+                <div className="grid grid-cols-3 gap-4 col-span-7">
+                  <div className="">
                     <div className="flex flex-col">
                       <span className="text-gray-500">Total Staked</span>
                       <span className="font-medium">
@@ -56,7 +77,7 @@ const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes
                       </span>
                     </div>
                   </div>
-                  <div className="col-span-2 space-y-2">
+                  <div className="">
                     <div className="flex flex-col">
                       <span className="text-gray-500">Number of Stakers</span>
                       <span className="font-medium">
@@ -64,7 +85,7 @@ const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes
                       </span>
                     </div>
                   </div>
-                  <div className="col-span-3 space-y-2">
+                  <div className=" ">
                     <div className="flex flex-col">
                       <span className="text-gray-500">Prev. Epoch Block Reward</span>
                       <span className="font-medium">
@@ -72,7 +93,31 @@ const ValidatorData = ({ selectedValidator, setSelectedValidator, numberOfStakes
                       </span>
                     </div>
                   </div>
-                </>
+                  <div className="">
+                    <div className="flex flex-col">
+                      <span className="text-gray-500">Inflation APY</span>
+                      <span className="font-medium">
+                        {fixedNumber(selectedValidator.apy_estimate) + '%' || <Skeleton className="h-6 w-24" />}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="">
+                    <div className="flex flex-col">
+                      <span className="text-gray-500">Jito APY</span>
+                      <span className="font-medium">
+                        {fixedNumber(selectedValidator.jito_apy) + '%' || <Skeleton className="h-6 w-24" />}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="">
+                    <div className="flex flex-col">
+                      <span className="text-gray-500">Block Reward APY</span>
+                      <span className="font-medium text-primary">
+                        { `${fixedNumber(blockRewardShareCalc)}%` }
+                      </span>
+                    </div>
+                  </div>
+                </div>
               ) : null}
             </div>
   
