@@ -105,7 +105,6 @@ export default function DistributeComponent({ stakerList, selectedValidator, sha
                 //     }
                 // ]
                 const transactions = await prepareAirdropTransactions(stakerList, signer, sharedBlockReward, connection);
-                console.log(transactions);
                 if (!signAllTransactions) {
                     throw new WalletNotConnectedError();
                 }
