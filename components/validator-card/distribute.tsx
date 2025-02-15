@@ -15,7 +15,7 @@ export default function DistributeComponent({ stakerList, selectedValidator, sha
     const { publicKey, signAllTransactions } = useWallet();
     const handleDistribute = async (stakerList: Staker[], selectedValidator: any) => {
         const signer = publicKey;
-        va.track('distribute');
+        va.track('distribute',{numOfStakers: stakerList.length});
         if (selectedValidator && signer) {
             try {
                 // const demoList = [
