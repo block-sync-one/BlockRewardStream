@@ -1,4 +1,3 @@
-import { useConnection } from "@solana/wallet-adapter-react";
 declare global {
 
     interface Number {
@@ -72,10 +71,3 @@ export const formatBigNumbers = (n: number, decimals = 2) => {
     return n;
 };
 
-export const getBlockReward = async () => {
-  const { connection } = useConnection();
-  const latestBlock = await connection.getSlot();
-  const block = await connection.getBlock(latestBlock);
-  
-  console.log(block); 
-}
