@@ -8,14 +8,14 @@ import { executeTransactions, prepareAirdropTransactions } from '@/app/utils/air
 import { Tooltip } from "@heroui/tooltip";
 import { Button } from '@heroui/button';
 import { Staker } from '@/app/utils/solana-helpers';
-
+import va from '@vercel/analytics';
 
 export default function DistributeComponent({ stakerList, selectedValidator, sharedBlockReward }: { stakerList: Staker[], selectedValidator: any, sharedBlockReward: number }) {
     const { connection } = useConnection();
     const { publicKey, signAllTransactions } = useWallet();
     const handleDistribute = async (stakerList: Staker[], selectedValidator: any) => {
         const signer = publicKey;
-    
+        va.track('distribute');
         if (selectedValidator && signer) {
             try {
                 // const demoList = [

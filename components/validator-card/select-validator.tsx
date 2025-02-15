@@ -7,7 +7,7 @@ import {
     AutocompleteItem
     } from "@heroui/autocomplete";
 import { fetchValidators, Validator } from "@/app/utils/solana-helpers";
-
+import va from '@vercel/analytics';
 
 interface ValidatorSelectProps {
   onValidatorSelect: (validator: Validator | null) => void;
@@ -45,7 +45,7 @@ export const ValidatorSelect = ({ onValidatorSelect }: ValidatorSelectProps) => 
       onValidatorSelect(null);
       return;
     }
-
+    va.track('select_validator', { vote_identity: key.toString() });
     const selectedValidator = validators.find(v => v.vote_identity === key);
     onValidatorSelect(selectedValidator || null);
   };
