@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { useState, useEffect } from "react";
-import { Validator, Staker } from "@/app/utils/solana-helpers";
+import { Validator, Staker, fetchCurrentEpoch } from "@/app/utils/solana-helpers";
 import ValidatorData from "@/components/validator-card/validator-data";
 import { StakersTable } from "@/components/staker-card/stakers-table";
 import BRCalc from "@/components/validator-card/br-calc";
@@ -22,6 +22,7 @@ export const StakeGroupWrapper = () => {
     const [totalBlockReward, setTotalBlockReward] = useState(0);
     const [balance, setBalance] = useState<number>(0);
     const [transactionStatus, setTransactionStatus] = useState<string[]>([]);
+    const [currentEpoch, setCurrentEpoch] = useState(0);
     useEffect(() => {
         const getBalance = async () => {
             if (connected && publicKey && connection) {
@@ -30,18 +31,19 @@ export const StakeGroupWrapper = () => {
             }
         };
         getBalance();
+        fetchCurrentEpoch(connection).then(epoch => setCurrentEpoch(epoch));
     }, [connected, publicKey, connection]);
 
     const handleTotalBlockRewardChange = (value: number | null) => {
         setTotalBlockReward(value ?? 0);
     };
-
-    return (
+// fetch current epoch
+return (
         <div className="flex flex-col gap-4">
             <Card>
                 <CardHeader className="pb-2">
                     <p className="text-sm text-gray-500">
-                        current epoch: 741
+                        Current epoch: {currentEpoch}
                     </p>
                 </CardHeader>
                 <CardBody>
@@ -82,7 +84,11 @@ export const StakeGroupWrapper = () => {
                                                 Disconnect
                                             </Button>
                                         </div>
-                                        <DistributeComponent stakerList={stakerList} selectedValidator={selectedValidator} />
+                                        <DistributeComponent 
+                                        stakerList={stakerList} 
+                                        selectedValidator={selectedValidator}
+                                        sharedBlockReward={rewardShare}
+                                        />
                                     </div>
                                 )}
                         </div>

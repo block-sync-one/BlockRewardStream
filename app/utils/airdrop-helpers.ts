@@ -16,39 +16,43 @@ import { Staker } from './solana-helpers';
 
 export const prepareAirdropTransactions = async (
     dropList: Staker[],
-    signer: PublicKey
+    signer: PublicKey,
+    sharedBlockReward: number
 ) => {
 
 
     const NUM_DROPS_PER_TX = 10;
 
-    function generateTransactions(
-        batchSize: number,
-        dropList: Staker[],
-    ): Transaction[] {
+
         let result: Transaction[] = [];
-        const txInstructions: TransactionInstruction[] = dropList.map(drop => {
+        const totalStake = dropList.reduce((acc, curr) => acc + curr.stake, 0);
+        const airdrop = dropList.map(drop => {
+            return {
+                account: drop.account,
+                airdrop: Math.floor(((drop.stake / totalStake) * sharedBlockReward) * LAMPORTS_PER_SOL)
+            }
+        })
+        console.log(airdrop);
+        const txInstructions: TransactionInstruction[] = airdrop.map(drop => {
             return SystemProgram.transfer({
                 fromPubkey: signer,
                 toPubkey: new PublicKey(drop.account),
-                lamports: Math.floor(drop.stake * LAMPORTS_PER_SOL),
+                lamports: drop.airdrop
             });
         });
 
-        const numTransactions = Math.ceil(txInstructions.length / batchSize);
+        const numTransactions = Math.ceil(txInstructions.length / NUM_DROPS_PER_TX);
         for (let i = 0; i < numTransactions; i++) {
             let bulkTransaction = new Transaction();
-            let lowerIndex = i * batchSize;
-            let upperIndex = (i + 1) * batchSize;
+            let lowerIndex = i * NUM_DROPS_PER_TX;
+            let upperIndex = (i + 1) * NUM_DROPS_PER_TX;
             for (let j = lowerIndex; j < upperIndex; j++) {
                 if (txInstructions[j]) bulkTransaction.add(txInstructions[j]);
             }
             result.push(bulkTransaction);
         }
         return result;
-    }
 
-    return generateTransactions(NUM_DROPS_PER_TX, dropList);
 }
 
 

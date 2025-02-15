@@ -44,8 +44,8 @@ export const StakersTable = ({ validatorVoteId, sharedBlockReward = 0, setStaker
                     return { items: updatedItems };
                 }
                 setIsLoading(true);
-                const currentEpoch = (await connection.getEpochInfo()).epoch;
-                const stakersData = await fetchDelegators(connection, validatorVoteId, currentEpoch);
+                
+                const stakersData = await fetchDelegators(connection, validatorVoteId);
 
                 // Calculate total stake
                 const totalStake = stakersData.reduce((acc, curr) => acc + curr.stake, 0);

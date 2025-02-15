@@ -162,7 +162,7 @@ export const fetchValidatorsExtended = async (voteIdentity: string): Promise<val
 export const fetchDelegators = async (
   connection: Connection,
   validatorVoteId: string,
-  currentEpoch: number
+
 ): Promise<Staker[]> => {
   const config = {
     filters: [{
@@ -177,7 +177,7 @@ export const fetchDelegators = async (
     new PublicKey('Stake11111111111111111111111111111111111111'),
     config
   );
-
+  const currentEpoch = await fetchCurrentEpoch(connection);
   return delegatorsParsed
     .filter(account =>
       Number((account.account.data as any)['parsed'].info?.stake?.delegation?.deactivationEpoch) > currentEpoch
@@ -195,3 +195,11 @@ export const fetchDelegators = async (
     .sort((a, b) => b.stake - a.stake);
 };
   
+export const fetchCurrentEpoch = async (connection: Connection): Promise<number> => {
+try {
+  const currentEpoch = (await connection.getEpochInfo()).epoch;
+  return currentEpoch;
+}catch(e){
+  throw new Error("Failed to fetch current epoch");
+}
+}
